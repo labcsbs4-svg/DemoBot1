@@ -1178,9 +1178,13 @@ function apiHeaders() {
 function reasoningParams() {
   const lvl = settings.reasoning || "default";
   if (lvl === "default") return {};
-  if (lvl === "off") return { reasoning: { enabled: false } };
+  if (lvl === "off") return {
+    reasoning: { enabled: false },
+    enable_thinking: false,
+    chat_template_kwargs: { enable_thinking: false }
+  };
   return { reasoning_effort: lvl };
-}
+             }
 
 // Web search: the `web` plugin (OpenRouter and BharatRouter both accept it).
 // Only sent to hosts that support it, so other providers are never sent an unknown field.
@@ -1271,8 +1275,8 @@ async function classifySearch(text, context) {
     const res = await fetch(settings.baseUrl.replace(/\/+$/, "") + "/chat/completions", {
       method: "POST",
       headers: apiHeaders(),
-      body: JSON.stringify({ model: settings.model, messages: msgs, temperature: 0, max_tokens: 12, stream: false, reasoning: { enabled: false } }),
-      signal: ctl.signal,
+      body: JSON.stringify({ model: settings.model, messages: msgs, temperature: 0, max_tokens: 12, stream: false, reasoning: { enabled: false }, enable_thinking: false, chat_template_kwargs: { enable_thinking: false } }),
+
     });
     clearTimeout(timer);
     if (!res.ok) return { search: true, source: "classifier", reason: "classifier unavailable \u2014 searched to be safe" };
